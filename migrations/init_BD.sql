@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS posts;
+
 CREATE TABLE IF NOT EXISTS posts (
                                      id SERIAL PRIMARY KEY,
                                      title TEXT NOT NULL,

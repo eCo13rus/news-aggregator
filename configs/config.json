@@ -6,8 +6,8 @@
   "database": {
     "host": "localhost",
     "port": "5432",
-    "user": "eco",
-    "password": "Horror4199.",
+    "user": "",
+    "password": "",
     "name": "news_aggregator",
     "ssl_mode": "disable"
   },
