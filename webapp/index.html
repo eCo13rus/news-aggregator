@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoNews - агрегатор новостей</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        GoNews - агрегатор новостей
+    </div>
+    <div id="news-container">
+        <div class="loading">Загрузка новостей...</div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', fetchNews);
+
+    function fetchNews() {
+        fetch('/api/news/10')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка сети');
+                }
+                return response.json();
+            })
+            .then(news => {
+                const container = document.getElementById('news-container');
+                container.innerHTML = '';
+
+                if (news.length === 0) {
+                    container.innerHTML = '<div class="loading">Новости не найдены</div>';
+                    return;
+                }
+
+                news.forEach(item => {
+                    container.appendChild(createNewsItem(item));
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки новостей:', error);
+                document.getElementById('news-container').innerHTML =
+                    '<div class="loading">Ошибка загрузки новостей. Пожалуйста, попробуйте позже.</div>';
+            });
+    }
+
+    function createNewsItem(news) {
+        const div = document.createElement('div');
+        div.className = 'news-item';
+
+        const date = new Date(news.pub_time * 1000);
+
+        // Очищаем контент
+        let cleanContent = news.content
+            .replace(/<a href=[^>]+>Читать далее<\/a>/g, '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        // Создаем краткий и полный варианты контента
+        const maxLength = 250;
+        let shortContent = cleanContent;
+        let isLongContent = false;
+
+        if (cleanContent.length > maxLength) {
+            shortContent = cleanContent.substring(0, maxLength);
+            isLongContent = true;
+        }
+
+        // Проверяем наличие изображения
+        const imgRegex = /<img[^>]+src="([^"]+)"/;
+        const imgMatch = news.content.match(imgRegex);
+        const hasImage = imgMatch && imgMatch[1];
+
+        div.innerHTML = `
+        ${hasImage ? `<img src="${imgMatch[1]}" class="news-image" alt="${news.title}" loading="lazy">` : ''}
+        <h2 class="news-title">
+            <a href="${news.link}" target="_blank" rel="noopener noreferrer">${news.title}</a>
+        </h2>
+        <div class="news-content">
+            <p class="short-content">${shortContent}${isLongContent ? '... ' : ''}</p>
+            ${isLongContent ? `
+                <p class="full-content" style="display: none;">${cleanContent}</p>
+                <a href="#" class="read-more-btn">Читать далее</a>
+            ` : ''}
+        </div>
+        <div class="news-date">
+            <time>
+                ${date.toLocaleString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })}
+            </time>
+        </div>
+    `;
+
+        // Добавляем обработчик для кнопки "Читать далее"
+        if (isLongContent) {
+            const readMoreBtn = div.querySelector('.read-more-btn');
+            const shortContent = div.querySelector('.short-content');
+            const fullContent = div.querySelector('.full-content');
+
+            readMoreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (shortContent.style.display !== 'none') {
+                    shortContent.style.display = 'none';
+                    fullContent.style.display = 'block';
+                    readMoreBtn.textContent = 'Свернуть';
+                } else {
+                    shortContent.style.display = 'block';
+                    fullContent.style.display = 'none';
+                    readMoreBtn.textContent = 'Читать далее';
+                }
+            });
+        }
+
+        return div;
+    }
+</script>
+</body>
+</html>

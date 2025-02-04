@@ -1,0 +1,20 @@
+{
+  "server": {
+    "port": "8080",
+    "host": "localhost"
+  },
+  "database": {
+    "host": "localhost",
+    "port": "5432",
+    "user": "eco",
+    "password": "Horror4199.",
+    "name": "news_aggregator",
+    "ssl_mode": "disable"
+  },
+  "rss": [
+    "https://habr.com/ru/rss/hub/go/all/?fl=ru",
+    "https://habr.com/ru/rss/best/daily/?fl=ru",
+    "https://cprss.s3.amazonaws.com/golangweekly.com.xml"
+  ],
+  "request_period": 5
+}
