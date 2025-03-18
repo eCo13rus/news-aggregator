@@ -7,7 +7,7 @@
     "host": "localhost",
     "port": "5432",
     "user": "",
-    "password": " ",
+    "password": "",
     "name": "news_aggregator",
     "ssl_mode": "disable"
   },
