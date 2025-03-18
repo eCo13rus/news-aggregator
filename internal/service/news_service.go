@@ -50,18 +50,32 @@ func (s *NewsService) handlePosts() {
 	}
 }
 
-// GetLatestPosts получает последние новости
+func (s *NewsService) GetLatestPostsWithPagination(limit, page int, searchQuery string) ([]*models.Post, int, error) {
+	posts, totalCount, err := s.storage.GetPosts(limit, page, searchQuery)
+	if err != nil {
+		return nil, 0, fmt.Errorf("ошибка получения новостей: %v", err)
+	}
+	return posts, totalCount, nil
+}
+
+func (s *NewsService) Stop() {
+	close(s.postsChan)
+	s.wg.Wait()
+	log.Println("Сервис новостей остановлен")
+}
+
 func (s *NewsService) GetLatestPosts(limit int) ([]*models.Post, error) {
-	posts, err := s.storage.GetPosts(limit)
+	posts, _, err := s.GetLatestPostsWithPagination(limit, 1, "")
 	if err != nil {
 		return nil, fmt.Errorf("ошибка получения новостей: %v", err)
 	}
 	return posts, nil
 }
 
-// Stop останавливает сервис новостей
-func (s *NewsService) Stop() {
-	close(s.postsChan)
-	s.wg.Wait()
-	log.Println("Сервис новостей остановлен")
+func (s *NewsService) GetPostByID(id int) (*models.Post, error) {
+	post, err := s.storage.GetPostByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка получения новости: %v", err)
+	}
+	return post, nil
 }

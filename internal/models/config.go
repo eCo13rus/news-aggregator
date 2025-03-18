@@ -1,6 +1,5 @@
 package models
 
-// Config представляет структуру конфигурации приложения
 type Config struct {
 	Server   ServerConfig   `json:"server"`
 	Database DatabaseConfig `json:"database"`
@@ -8,13 +7,11 @@ type Config struct {
 	Period   int            `json:"request_period"`
 }
 
-// ServerConfig конфигурация сервера
 type ServerConfig struct {
 	Port string `json:"port"`
 	Host string `json:"host"`
 }
 
-// DatabaseConfig конфигурация базы данных
 type DatabaseConfig struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`

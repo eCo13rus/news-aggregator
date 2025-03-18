@@ -1,13 +1,13 @@
 {
   "server": {
-    "port": "8080",
+    "port": "8081",
     "host": "localhost"
   },
   "database": {
     "host": "localhost",
     "port": "5432",
-    "user": "",
-    "password": "",
+    "user": "eco",
+    "password": "Horror4199.",
     "name": "news_aggregator",
     "ssl_mode": "disable"
   },
